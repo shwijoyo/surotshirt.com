@@ -1,6 +1,6 @@
 (()=>{
 	let baseurl = "http://localhost:8001";
-	let source = `https://cdn.jsdelivr.net/gh/shwijoyo/surotshirt.com@v0.0.3`;
+	let source = `https://cdn.jsdelivr.net/gh/shwijoyo/surotshirt.com@v0.0.4`;
 	let region = "en-us";
 	let lang = JSON.parse(`
 	{
@@ -89,16 +89,15 @@
 		}
 		
 	let mainIndex = ()=>{
+		alert("fggg");
 		$.getJSON(`${source}/data/data.json`, (data)=>{
-			
+			alert(data);
 			let str = ``;
 			$.each(data, (i, v)=>{
-				/* str += `<div class="col-6 col-md-4 col-lg-3">
-      <a href="${baseurl}/${region}/${lang[region][3]}/${v.slug}"><img src="${source}/data/${v.block}/${v.slug}/${v.image[0]}" class="card-img-top" alt="..." ></a>
-    </div>`; */
+				alert(v.image[0][0]);
     str += `<div class="col-md-6 col-lg-4 col-xl-3">
 								<div id="product-1" class="single-product">
-										<div class="part-1" style="background-image: url('${source}/data/${v.block}/${v.slug}/${v.image[0]}')">
+										<div class="part-1" style="background-image: url('${v.image[0][0]}')">
 												<ul>
 														<li><a href="${baseurl}/${region}/${lang[region][3]}/${v.slug}"><i class="fa fa-cart-plus me-1"></i> View</a></li>
 														<li><a href="#"><i class="fa fa-paint-brush me-1"></i> Design</a></li>
