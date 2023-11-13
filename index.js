@@ -1,6 +1,6 @@
 (()=>{
 	let baseurl = "http://localhost:8001";
-	let source = `https://cdn.jsdelivr.net/gh/shwijoyo/surotshirt.com@v0.0.2`;
+	let source = `https://cdn.jsdelivr.net/gh/shwijoyo/surotshirt.com@v0.0.3`;
 	let region = "en-us";
 	let lang = JSON.parse(`
 	{
@@ -93,11 +93,44 @@
 			
 			let str = ``;
 			$.each(data, (i, v)=>{
-				str += `<div class="col-6 col-md-4 col-lg-3">
+				/* str += `<div class="col-6 col-md-4 col-lg-3">
       <a href="${baseurl}/${region}/${lang[region][3]}/${v.slug}"><img src="${source}/data/${v.block}/${v.slug}/${v.image[0]}" class="card-img-top" alt="..." ></a>
-    </div>`;
+    </div>`; */
+    str += `<div class="col-md-6 col-lg-4 col-xl-3">
+								<div id="product-1" class="single-product">
+										<div class="part-1" style="background-image: url('${source}/data/${v.block}/${v.slug}/${v.image[0]}')">
+												<ul>
+														<li><a href="${baseurl}/${region}/${lang[region][3]}/${v.slug}"><i class="fa fa-cart-plus me-1"></i> View</a></li>
+														<li><a href="#"><i class="fa fa-paint-brush me-1"></i> Design</a></li>
+														
+												</ul>
+										</div>
+										<div class="part-2">
+												<h3 class="product-title">${v.name}</h3>
+												
+												<h4 class="product-price">$49.99</h4>
+										</div>
+								</div>
+						</div>`;
 				});
-			$("main").append(`<div class="container my-2 py-2"><div class="row">${str}</div></div>`).append(`<nav>
+			$("main").append(`<div class="d-none container my-2 py-2"><div class="row">${str}</div></div>`).append(`<section class="section-products">
+		<div class="container">
+				<div class="row justify-content-center text-center">
+						<div class="col-md-8 col-lg-6">
+								<div class="header">
+										
+										<h2>Products</h2>
+								</div>
+						</div>
+				</div>
+				<div class="row">
+						<!-- Single Product -->
+						${str}
+						
+						
+				</div>
+		</div>
+</section>`).append(`<nav>
   <ul class="pagination pagination-sm justify-content-center my-3 py-3">
     
     <li class="page-item"><a class="page-link" href="#">1</a></li>
@@ -114,7 +147,7 @@
 			let image = ``;
 			let name = ``;
 			$.each(data, (i, v)=>{
-				v.category = "tshirt";
+				
 				if(slug == v.slug){
 					name = v.name;
 					$.each(v.image, (j, k)=>{
@@ -128,8 +161,8 @@
 				
 				});
 			$("main").append(`
-		<div class="container my-2 py-2">
-<h1 class="mt-2 mb-5">${name}</h1>
+		<div class="container my-2 py-2 mt-5">
+
 <div class="row">
 <div class="col-md-7 text-center">
       <div id="carouselExample" class="carousel slide" data-bs-theme="dark" data-bs-ride="carousel">
@@ -155,6 +188,7 @@
 
     </div>
     <div class="col-md-5 mt-5">
+    <h1 class="mt-2 mb-4 fs-4">${name}</h1>
     <h5 class="clearfix mb-3">
     <span class="float-start">Price</span>
     <span class="float-end">: $14.3</span>
