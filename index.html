@@ -237,6 +237,10 @@
   <label for="price" class="form-label">Estimated price</label>
   <input type="text" class="form-control-plaintext fw-bold" id="price" readonly value="Rp2000-Rp3000 (IDR)">
 </div>
+<div class="alert alert-dismissible fade hide alert-success d-none" role="alert">
+  <strong>Sucecss!</strong> We will post your order on the marketplace (Amazon) and immediately send the link to your email once the product is ready. need help? contact us
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 <div class="d-grid gap-1">
   <button id="process" class="btn btn-lg btn-primary" type="button">Process</button>
 </div>
@@ -334,9 +338,9 @@
               <div class="col-lg-3 col-sm-6 pb-3">
                 <div class="footer-menu contact-item">
                   <h5 class="widget-title text-uppercase pb-2">Contact Us</h5>
-                  <p>Do you have any queries or suggestions? <a href="mailto:">yourinfo@gmail.com</a>
+                  <p>Do you have any queries or suggestions? <a href="mailto:surotshirt@gmail.com">surotshirt@gmail.com</a>
                   </p>
-                  <p>If you need support? Just give us a call. <a href="">+55 111 222 333 44</a>
+                  <p>If you need support? whatsapp <a href="https://wa.me/6287718141945">+62 877 1814 1945</a>
                   </p>
                 </div>
               </div>
@@ -377,7 +381,7 @@
 	let country = {};
 	let countries= [];
 	let format = (value) => {
-		console.log(country["currency_symbol"]);
+		
         return currency(value, {
             precision: 0,
             symbol: country["currency_symbol"],
@@ -426,7 +430,7 @@
            }
         });
         
-          $("#country").append(`<option value="${v.iso3}" ${(v.iso3 == country.iso3)?"selected":""}>${v.name}</option>`);
+          $("#country").append(`<option value="${v.name}" ${(v.name == country.name)?"selected":""}>${v.name}</option>`);
        });
 		    
 		 });
@@ -438,7 +442,7 @@
 				}
 		let desc = {slug: String($("#title").val()).replace(/ /g, "-"), name: $("#title").val(), image: [], design: [], designdata: [], designwide: 0, color:data.canvas[data.point].data.background, tag: $("#tag").val(), createdAt: new Date().toISOString()};
 		canvas.captureAll(function(v){
-	console.log(v);
+	
 	var zip = new JSZip();
 	
 	$.each(v, (j, k)=>{
@@ -468,6 +472,23 @@ zip.generateAsync({type:"blob"})
 			alert("cannot be blank");
 				return false;
 			}
+		let message = `
+new order!
+
+title: ${$("#title").val()}
+name: ${$("#title").val()}
+email: ${$("#email").val()}
+country: ${$("#country").val()}
+address: ${$("#address").val()}
+price: ${$("#price").val()}
+marketplace: ${$("#marketplace").val()}
+
+
+data:
+${JSON.stringify(data)}
+		`;
+		console.log(message);
+		callback();
 		}
 	let render = ()=>{
 		let price = (size*0.00002);
@@ -497,7 +518,7 @@ zip.generateAsync({type:"blob"})
 		});
 	$("#country").on("change", function (){
 		$.each(countries, (i, v)=>{
-			    if(v.iso3 == this.value){
+			    if(v.name == this.value){
 				country = v;
 				}
 			});
@@ -508,7 +529,7 @@ zip.generateAsync({type:"blob"})
 			downloader(()=>{});
 			}
 		else if(!download && buy){
-			buying(()=>{});
+			buying(()=>{$(".alert").removeClass("hide d-none").addClass("show")});
 			}
 		});
 	})();
@@ -517,7 +538,7 @@ zip.generateAsync({type:"blob"})
     
     
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
-	<script src="js/script.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/shwijoyo/surotshirt.com@master/js/script.js"></script>
 	
 	
   </body>
