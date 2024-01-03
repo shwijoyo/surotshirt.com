@@ -203,15 +203,35 @@
 <div class="buy mb-3 d-none">
   <label for="marketplace" class="form-label">Marketplace platform</label>
   <select id="marketplace" class="form-select">
-  <option selected>Amazon</option>
+  <option selected value="amazon">Amazon</option>
+  <option value="allegro">Allegro</option>
+  <option value="aliexpress">AliExpress</option>
+  <option value="ebay">eBay</option>
+  <option value="etsy">Etsy</option>
+  <option value="flipkart">Flipkart</option>
+  <option value="jd">JD</option>
+  <option value="mercadolibre">Mercadolibre</option>
+  <option value="mercari">Mercari</option>
+  <option value="ozon">Ozon</option>
+  <option value="pinduoduo">Pinduoduo</option>
+  <option value="rakuten">Rakuten</option>
+  <option value="shopee">Shopee</option>
+  <option value="taobao">Taobao</option>
+  <option value="target">Target</option>
+  <option value="temu">Temu</option>
+  <option value="tokopedia">Tokopedia</option>
+  <option value="trendyol">Trendyol</option>
+  <option value="walmart">Walmart</option>
+  <option value="wildberries">Wildberries</option>
+  <option value="yandex">Yandex Market</option>
 </select>
 </div>
 <div class="buy mb-3 d-none">
   <label for="country" class="form-label">Address</label>
   <select id="country" class="form-select">
-  <option selected disabled>Select country</option>
+  
 </select>
-<textarea class="form-control mt-1" id="address" placeholder="Address" rows="3"></textarea>
+<textarea class="form-control mt-2" id="address" placeholder="Address (optional)" rows="3"></textarea>
 </div>
 <div class="buy mb-3 d-none">
   <label for="price" class="form-label">Estimated price</label>
@@ -341,7 +361,8 @@
 		<script src="https://cdn.jsdelivr.net/gh/shwijoyo/jquery-googlefontpicker@v2.0.1/jquery.googlefontpicker.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
 		<script src="https://cdn.jsdelivr.net/gh/shwijoyo/jquery-designpicker@v1.0.1/jquery.designpicker.js"></script>
-		<script src="https://cdn.jsdelivr.net/gh/shwijoyo/jquery-customTShirt@v2.1.0/jquery.customTShirt.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/shwijoyo/jquery-customTShirt@v2.1.2/jquery.customTShirt.js"></script>
+		<script src="https://www.unpkg.com/currency.js@2.0.4/dist/currency.min.js"></script>
     
     <script>
     	
@@ -352,7 +373,18 @@
 	let buy = false;
 	let data = {};
 	let canvas = {};
-	
+	let size = 0;
+	let country = {};
+	let countries= [];
+	let format = (value) => {
+		console.log(country["currency_symbol"]);
+        return currency(value, {
+            precision: 0,
+            symbol: country["currency_symbol"],
+            decimal: ',',
+            separator: '.'
+        }).format();
+    }
 	let checked = ()=>{
 		download = $('#download').is(':checked');
 		buy = $('#buy').is(':checked');
@@ -366,6 +398,7 @@
 		let settings = {
 			onSave: (d, c)=>{
 				c.exportImage();
+				
 				},
 			onRender: (d, c)=>{
 				data = d;
@@ -383,43 +416,99 @@
 				$("#demo").customTShirt(settings);
 				});
 			}
-	
+	     $.getJSON("https://cdn.jsdelivr.net/gh/dr5hn/countries-states-cities-database@master/countries.json", function (d){
+		countries = d
+		country = countries[235];
+        $.each(countries, (i, v) => {
+        	$.each(v.timezones, (k, l)=>{
+        	if (String(l.zoneName).includes(Intl.DateTimeFormat().resolvedOptions().timeZone)) {
+            country = v;
+           }
+        });
+        
+          $("#country").append(`<option value="${v.iso3}" ${(v.iso3 == country.iso3)?"selected":""}>${v.name}</option>`);
+       });
+		    
+		 });
 		})();
 	let downloader = (callback)=>{
-		let desc = {slug: String($("#title").val()).replace(/ /g, "-"), name: $("#title").val(), image: [], design: [], color:data.canvas[data.point].data.background, tag: $("#tag").val(), createdAt: new Date().toISOString()};
+		if($("#title").val() == ""){
+				alert("cannot be blank");
+				return false;
+				}
+		let desc = {slug: String($("#title").val()).replace(/ /g, "-"), name: $("#title").val(), image: [], design: [], designdata: [], designwide: 0, color:data.canvas[data.point].data.background, tag: $("#tag").val(), createdAt: new Date().toISOString()};
 		canvas.captureAll(function(v){
 	console.log(v);
-	/* var zip = new JSZip();
-$.each(v.image, (j, k)=>{
-	desc.image[j] = `image-${j}.png`;
-	zip.file(desc.image[j], String(k).replace(/data\:image\/png\;base64\,/g, ""), {base64: true});
-	});
-$.each(v.design, (j, k)=>{
-	desc.design[j] = `design-${j}.png`;
-	zip.file(desc.design[j], String(k).replace(/data\:image\/png\;base64\,/g, ""), {base64: true});
-	});
+	var zip = new JSZip();
+	
+	$.each(v, (j, k)=>{
+		desc.image.push(`image-${j}.png`);
+	    zip.file(desc.image[j], String(k.image).replace(/data\:image\/png\;base64\,/g, ""), {base64: true});
+	    if(k.design != null){
+		     let name = `design-${j}`;
+		     desc.design.push(`${name}.png`);
+		     desc.designdata.push(`${name}.json`);
+	         zip.file(`${name}.png`, String(k.design).replace(/data\:image\/png\;base64\,/g, ""), {base64: true});
+	         zip.file(`${name}.json`, JSON.stringify(data.canvas[j].data.objects));
+		   }
+		desc.designwide += (k.size.width*k.size.height);
+		});
 zip.file("data.json", JSON.stringify(data));
-zip.file("design.json", JSON.stringify(data.canvas[data.point].data.objects));
 zip.file("desc.json", JSON.stringify(desc));
 zip.generateAsync({type:"blob"})
 .then(function(content) {
     saveAs(content, `${desc.slug}.zip`);
     callback();
-}); */
+});
 	});
 	
 		}
-	
-	$("#buy, #download").on("change", function(){
+	let buying = (callback)=>{
+		if($("#title").val() == "" || $("#name").val() == "" || $("#email").val() == "" || $("#marketplace").val() == "" || $("#country").val() == ""){
+			alert("cannot be blank");
+				return false;
+			}
+		}
+	let render = ()=>{
+		let price = (size*0.00002);
+		let cc = String(country.currency).toLowerCase();
+		$.getJSON(`https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd/${cc}.json`, function(d){
+			
+			$("#price").val(`${format((price+5)*d[cc])}-${format((price+15)*d[cc])} (${country.currency})`);
+			});
+		
+		}
+	$("#download").on("change", function(){
 		checked();
+		});
+	$("#buy").on("change", function(){
+		if(this.checked){
+			let s = canvas.captureSize();
+		    size = s.width*s.height;
+		    setTimeout(()=>{
+			    this.checked = true;
+			    checked();
+			    render();
+			   }, 1000);
+			}
+		else{
+			checked();
+			}
+		});
+	$("#country").on("change", function (){
+		$.each(countries, (i, v)=>{
+			    if(v.iso3 == this.value){
+				country = v;
+				}
+			});
+		render();
 		});
 	$("#process").on("click", function (){
 		if(download && !buy){
-			if($("#title").val() == ""){
-				alert("cannot be blank");
-				return false;
-				}
 			downloader(()=>{});
+			}
+		else if(!download && buy){
+			buying(()=>{});
 			}
 		});
 	})();
